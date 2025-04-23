@@ -1,0 +1,205 @@
+services:
+  zookeeper-0:
+    image: bitnami/zookeeper:3.5
+    container_name: zookeeper-0
+    hostname: zookeeper-0
+    ports:
+      - "2180:2181"
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 60s
+      retries: 3
+    networks:
+      - kafkanet
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOOKEEPER_SERVER_ID=0
+      - ZOOKEEPER_CLIENT_PORT=2180
+      - ZOOKEEPER_SERVERS=zookeeper-0:2888:3888;zookeeper-1:2888:3888;zookeeper-2:2888:3888
+    volumes:
+      - zookeeper_0_data:/bitnami/zookeeper
+  zookeeper-1:
+    image: bitnami/zookeeper:3.5
+    container_name: zookeeper-1
+    hostname: zookeeper-1
+    ports:
+      - "2181:2181"
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 60s
+      retries: 3
+    networks:
+      - kafkanet
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOOKEEPER_SERVER_ID=1
+      - ZOOKEEPER_CLIENT_PORT=2180
+      - ZOOKEEPER_SERVERS=zookeeper-0:2888:3888;zookeeper-1:2888:3888;zookeeper-2:2888:3888
+    volumes:
+      - zookeeper_1_data:/bitnami/zookeeper
+  zookeeper-2:
+    image: bitnami/zookeeper:3.5
+    container_name: zookeeper-2
+    hostname: zookeeper-2
+    ports:
+      - "2182:2181"
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 60s
+      retries: 3
+    networks:
+      - kafkanet
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOOKEEPER_SERVER_ID=2
+      - ZOOKEEPER_CLIENT_PORT=2182
+      - ZOOKEEPER_SERVERS=zookeeper-0:2888:3888;zookeeper-1:2888:3888;zookeeper-2:2888:3888
+    volumes:
+      - zookeeper_2_data:/bitnami/zookeeper
+  kafka-0:
+    image: bitnami/kafka:2.8.1
+    container_name: kafka-0
+    hostname: kafka-0
+    expose:
+      - 9092
+      - 9093
+    ports:
+      - "29092:29092"
+      - "19092:19092"
+    healthcheck:
+      test: ["CMD", "kafka-topics.sh", "--list", "--bootstrap-server", "localhost:9092"]
+      interval: 60s
+      retries: 3
+    networks:
+      - kafkanet
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper-0:2180,zookeeper-1:2181,zookeeper-2:2182
+      - KAFKA_CFG_BROKER_ID=0
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT,SSL:SSL,EXTERNAL:SSL,EXTERNAL2:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=INTERNAL://:9092,SSL://:9093,EXTERNAL://:29092,EXTERNAL2://:19092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=INTERNAL://kafka-0:9092,SSL://kafka-0:9093,EXTERNAL://localhost:29092,EXTERNAL2://localhost:19092
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=SSL
+      - KAFKA_CFG_SSL_KEYSTORE_LOCATION=/opt/bitnami/kafka/config/certs/kafka.keystore.jks
+      - KAFKA_CFG_SSL_KEYSTORE_PASSWORD=pcm@2025
+      - KAFKA_CFG_SSL_KEY_PASSWORD=pcm@2025
+      - KAFKA_CFG_SSL_TRUSTSTORE_LOCATION=/opt/bitnami/kafka/config/certs/kafka.truststore.jks
+      - KAFKA_CFG_SSL_TRUSTSTORE_PASSWORD=pcm@2025
+      - KAFKA_CFG_SSL_CLIENT_AUTH=required
+      - KAFKA_CFG_CLUSTER_ID='7NEQIl2aS5CUr4Bw6Cqy3g=='
+    volumes:
+      - kafka_0_data:/bitnami/kafka
+      - ./keystore/kafka-0.server.keystore.jks:/opt/bitnami/kafka/config/certs/kafka.keystore.jks:ro
+      - ./keystore/kafka.client.keystore.jks:/opt/bitnami/kafka/config/certs/kafka.client.keystore.jks:ro
+      - ./truststore/kafka.truststore.jks:/opt/bitnami/kafka/config/certs/kafka.truststore.jks:ro
+      - ./client.properties:/opt/bitnami/kafka/config/client.properties:ro
+    depends_on:
+      - zookeeper-0
+      - zookeeper-1
+      - zookeeper-2
+  kafka-1:
+    image: bitnami/kafka:2.8.1
+    container_name: kafka-1
+    hostname: kafka-1
+    expose:
+      - 9092
+      - 9093
+    ports:
+      - "29093:29093"
+      - "19093:19093"
+    healthcheck:
+      test: ["CMD", "kafka-topics.sh", "--list", "--bootstrap-server", "localhost:9092"]
+      interval: 60s
+      retries: 3
+    networks:
+      - kafkanet
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper-0:2180,zookeeper-1:2181,zookeeper-2:2182
+      - KAFKA_CFG_BROKER_ID=1
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT,SSL:SSL,EXTERNAL:SSL,EXTERNAL2:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=INTERNAL://:9092,SSL://:9093,EXTERNAL://:29093,EXTERNAL2://:19093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=INTERNAL://kafka-1:9092,SSL://kafka-1:9093,EXTERNAL://localhost:29093,EXTERNAL2://localhost:19093
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=SSL
+      - KAFKA_CFG_SSL_KEYSTORE_LOCATION=/opt/bitnami/kafka/config/certs/kafka.keystore.jks
+      - KAFKA_CFG_SSL_KEYSTORE_PASSWORD=pcm@2025
+      - KAFKA_CFG_SSL_KEY_PASSWORD=pcm@2025
+      - KAFKA_CFG_SSL_TRUSTSTORE_LOCATION=/opt/bitnami/kafka/config/certs/kafka.truststore.jks
+      - KAFKA_CFG_SSL_TRUSTSTORE_PASSWORD=pcm@2025
+      - KAFKA_CFG_SSL_CLIENT_AUTH=required
+      - KAFKA_CFG_CLUSTER_ID='7NEQIl2aS5CUr4Bw6Cqy3g=='
+    volumes:
+      - kafka_1_data:/bitnami/kafka
+      - ./keystore/kafka-1.server.keystore.jks:/opt/bitnami/kafka/config/certs/kafka.keystore.jks:ro
+      - ./keystore/kafka.client.keystore.jks:/opt/bitnami/kafka/config/certs/kafka.client.keystore.jks:ro
+      - ./truststore/kafka.truststore.jks:/opt/bitnami/kafka/config/certs/kafka.truststore.jks:ro
+      - ./client.properties:/opt/bitnami/kafka/config/client.properties:ro
+    depends_on:
+      - zookeeper-0
+      - zookeeper-1
+      - zookeeper-2
+  kafka-2:
+    image: bitnami/kafka:2.8.1
+    container_name: kafka-2
+    hostname: kafka-2
+    expose:
+      - 9092
+      - 9093
+    ports:
+      - "29094:29094"
+      - "19094:19094"
+    healthcheck:
+      test: ["CMD", "kafka-topics.sh", "--list", "--bootstrap-server", "localhost:9092"]
+      interval: 60s
+      retries: 3
+    networks:
+      - kafkanet
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper-0:2180,zookeeper-1:2181,zookeeper-2:2182
+      - KAFKA_CFG_BROKER_ID=2
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=INTERNAL:PLAINTEXT,SSL:SSL,EXTERNAL:SSL,EXTERNAL2:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=INTERNAL://:9092,SSL://:9093,EXTERNAL://:29094,EXTERNAL2://:19094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=INTERNAL://kafka-2:9092,SSL://kafka-2:9093,EXTERNAL://localhost:29094,EXTERNAL2://localhost:19094
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=SSL
+      - KAFKA_CFG_SSL_KEYSTORE_LOCATION=/opt/bitnami/kafka/config/certs/kafka.keystore.jks
+      - KAFKA_CFG_SSL_KEYSTORE_PASSWORD=pcm@2025
+      - KAFKA_CFG_SSL_KEY_PASSWORD=pcm@2025
+      - KAFKA_CFG_SSL_TRUSTSTORE_LOCATION=/opt/bitnami/kafka/config/certs/kafka.truststore.jks
+      - KAFKA_CFG_SSL_TRUSTSTORE_PASSWORD=pcm@2025
+      - KAFKA_CFG_SSL_CLIENT_AUTH=required
+      - KAFKA_CFG_CLUSTER_ID='7NEQIl2aS5CUr4Bw6Cqy3g=='
+    volumes:
+      - kafka_2_data:/bitnami/kafka
+      - ./keystore/kafka-2.server.keystore.jks:/opt/bitnami/kafka/config/certs/kafka.keystore.jks:ro
+      - ./keystore/kafka.client.keystore.jks:/opt/bitnami/kafka/config/certs/kafka.client.keystore.jks:ro
+      - ./truststore/kafka.truststore.jks:/opt/bitnami/kafka/config/certs/kafka.truststore.jks:ro
+      - ./client.properties:/opt/bitnami/kafka/config/client.properties:ro
+    depends_on:
+      - zookeeper-0
+      - zookeeper-1
+      - zookeeper-2
+
+networks:
+  kafkanet:
+    name: kafka-network
+
+volumes:
+  zookeeper_0_data:
+    driver: local
+    name: zookeeper_0_data
+  zookeeper_1_data:
+    driver: local
+    name: zookeeper_1_data
+  zookeeper_2_data:
+    driver: local
+    name: zookeeper_2_data
+  kafka_0_data:
+    driver: local
+    name: kafka_0_data
+  kafka_1_data:
+    driver: local
+    name: kafka_1_data
+  kafka_2_data:
+    driver: local
+    name: kafka_2_data
