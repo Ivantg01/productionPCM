@@ -4,7 +4,7 @@ This project is an example how to use Cloud and Virtualization technologies for 
 
 Integration of different tools to collect, process, store and display information regarding the power consumption of OLTs. An OLT is a Telecom network equipment used to deliver fiber to the home broadband services.
 
-This repository is based on the PowerConsumptionMonitoring repository and adds security, data redundancy, load balancing and cloud mechanishms.
+This repository is based on my https://github.com/Ivantg01/PowerConsumptionMonitoring repository and adds security, data redundancy, load balancing and cloud mechanishms.
 
 ## Tools used:
 ![tools](https://skillicons.dev/icons?i=kafka,prometheus,grafana,docker,nginx) 
