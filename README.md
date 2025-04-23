@@ -39,10 +39,10 @@ Kafka cluster with SSL configuration uses the great guides available at https://
 ## Grafana screenshots 
 Grafana has been connected to Prometheus and different dashboards have been created: 
 
-<img src="./screenshots/dashboard1.jpg" width="90%"></img>
-<img src="./screenshots/dashboard3.jpg" width="90%"></img>
-<img src="./screenshots/dashboard4.jpg" width="90%"></img>
-<img src="./screenshots/dashboard2.jpg" width="90%"></img>
-<img src="./screenshots/dashboard5.jpg" width="90%"></img>
-<img src="./screenshots/dashboard6.jpg" width="90%"></img>
-<img src="./screenshots/dashboard7.jpg" width="90%"></img>
+<img src="./screenshots/Imagen1.jpg" width="90%"></img>
+<img src="./screenshots/Imagen3.jpg" width="90%"></img>
+<img src="./screenshots/Imagen4.jpg" width="90%"></img>
+<img src="./screenshots/Imagen2.jpg" width="90%"></img>
+<img src="./screenshots/Imagen5.jpg" width="90%"></img>
+<img src="./screenshots/Imagen6.jpg" width="90%"></img>
+<img src="./screenshots/Imagen7.jpg" width="90%"></img>
