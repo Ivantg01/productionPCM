@@ -6,8 +6,10 @@ Integration of different tools to collect, process, store and display informatio
 
 This repository is based on my https://github.com/Ivantg01/PowerConsumptionMonitoring repository and adds security, data redundancy, load balancing and cloud mechanishms.
 
+Kafka cluster with SSL configuration uses the great guides available at https://jaehyeon.me/blog/2023-07-06-kafka-development-with-docker-part-9/ 
+
 ## Tools used:
-![tools](https://skillicons.dev/icons?i=kafka,prometheus,grafana,docker,nginx) 
+![tools](https://skillicons.dev/icons?i=kafka,prometheus,grafana,docker,nginx,googlecloud) 
 * Kafka+Zookeeper to send and receive power consumption metrics in JSON format  
 * Prometheus to store the collected information as time series 
 * Grafana to build and display multiple dashboard 
@@ -17,32 +19,30 @@ This repository is based on my https://github.com/Ivantg01/PowerConsumptionMonit
 * HTTPS for Grafana access via internet
 
 ## Folder structure:
-* ```kafka```: bus to send and consume power consumption metrics
-  * ```docker-compose-kafka-kraft-sasl.yml```: YAML used by docker compose to create the kafka container.
-  * ```kafka_server_jaas.conf```: Kafka configuration file for SASL credentials.
-  * ```sasl_server.properties```: Main Kafka-Kraft configuration file with SASL.
+* ```kafka-cluster-ssl```: Kafka bus to send and consume power consumption metrics working in cluster and with SSL enabled
  
-* ```simulator```: metric generator
-  * ```producer_sasl_energy.py```: Python program that emulates the generation of power consumption metrics from multiple elements.
-  * ```example.json```: example of a power consumption metric in JSON format.
+* ```power-producer-ssl```: metric generator based on generic public information and GPS coordinates calculated from location names using OpenStreetMap API
 
-* ```prometheus```: docker definitions for Prometheus and Grafana
-  * ```docker_compose.yml```: YAML used by docker compose to create Prometeus and Grafana containers.
-  * ```prometheus.yml```: YAML used by Prometheus as its default configuration.
+* ```power-exporter-ssl```: docker definitions for Prometheus and Grafana working in cluster
+  
+* ```power-exporter-ssl```: program to export metrics from Kafka to Prometheus with 2 exporter instances and a load balancer
 
-* ```exporter```: program to export metrics to Prometheus
-  * ```power_exporter.py```: Python program to implement the specific Prometheus exporter to collect metric to Kafka and export them to Prometheus.
-  * ```requirements.txt```: file with the Python libs used by power_exporter.py, basically Kafka and Prometheus client libs.
-  * ```dockerfile```: file with the definition of the container for the Prometheus exporter used by Prometheus to collect metrics.
-  * ```docker_compose.yml```: YAML used by docker to create the container of the Prometheus exporter.
+<img src="./screenshots/containers.jpg" width="90%"></img>
+
+## Notes
+* Kafka generated certificates are autosigned
+* Grafana HTTPS generated certificate is autosigned.
+* Free signed certificates for 90 days can be generated in https://www.sslforfree.com/
+* Free DNS names for can be obtained in https://freedns.afraid.org
+* Free cloud resources can be obtained in Google Cloud Platform. This project has been deployed in GCP using an e2 VM with 2vCPU, 8GB RAM, 40GB SSD
    
 ## Grafana screenshots 
 Grafana has been connected to Prometheus and different dashboards have been created: 
 
 <img src="./screenshots/dashboard1.jpg" width="90%"></img>
-<img src="./screenshots/dashboard3.jpg" width="45%"></img>
-<img src="./screenshots/dashboard4.jpg" width="45%"></img>
-<img src="./screenshots/dashboard2.jpg" width="45%"></img>
-<img src="./screenshots/dashboard5.jpg" width="45%"></img>
-<img src="./screenshots/dashboard6.jpg" width="45%"></img>
-<img src="./screenshots/dashboard7.jpg" width="45%"></img>
+<img src="./screenshots/dashboard3.jpg" width="90%"></img>
+<img src="./screenshots/dashboard4.jpg" width="90%"></img>
+<img src="./screenshots/dashboard2.jpg" width="90%"></img>
+<img src="./screenshots/dashboard5.jpg" width="90%"></img>
+<img src="./screenshots/dashboard6.jpg" width="90%"></img>
+<img src="./screenshots/dashboard7.jpg" width="90%"></img>
