@@ -1,0 +1,4 @@
+#user name for Prometheus inlcuding a password hash using Bcrypt, here password='admin123'
+#example using https://bcrypt-generator.com/
+basic_auth_users:
+  admin: $2a$12$pJEQSLFMTaO4bryRbz6i8eCjD3znJhHGxmE0vk6DFw.EY2K2XiWlW
