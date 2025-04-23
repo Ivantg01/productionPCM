@@ -27,7 +27,7 @@ Kafka cluster with SSL configuration uses the great guides available at https://
   
 * ```power-exporter-ssl```: program to export metrics from Kafka to Prometheus with 2 exporter instances and a load balancer
 
-<img src="./screenshots/containers.png" width="90%"></img>
+<img src="./screenshots/containers.jpg" width="90%"></img>
 
 ## Notes
 * Kafka generated certificates are autosigned
