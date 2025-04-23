@@ -1,0 +1,17 @@
+services:
+  power_producer:
+    build: .
+    image: "producer/power_producer_ssl"
+    container_name: power_producer_ssl
+    hostname: powerprod
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    environment:
+      KAFKA_TOPIC: 'PowerProd'
+      KAFKA_SERVER: 'kafka-0:29092,kafka-1:29093,kafka-2:29094'
+    volumes:
+      - ./pem/ca-root.pem:/code/pem/ca-root.pem:ro
+      - ./pem/client-certificate.pem:/code/pem/client-certificate.pem:ro
+      - ./pem/client-private-key.pem:/code/pem/client-private-key.pem:ro
+
