@@ -1,0 +1,58 @@
+services:
+  power_exporter_ssl0:
+    build: .
+    image: "exporters/power_exporter_ssl"
+    container_name: power_exporter_ssl0
+    hostname: power_exporter0
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9100"]
+      interval: 60s
+      retries: 3
+    environment:
+      KAFKA_TOPIC: 'PowerProd'
+      KAFKA_BOOTSTRAP_SERVERS: '172.17.0.1:29092,172.17.0.1:29093,172.17.0.1:29094'
+      EXPORTER_PORT: 9100
+    volumes:
+      - ./pem/ca-root.pem:/code/pem/ca-root.pem:ro
+      - ./pem/client-certificate.pem:/code/pem/client-certificate.pem:ro
+      - ./pem/client-private-key.pem:/code/pem/client-private-key.pem:ro
+
+  power_exporter_ssl1:
+    build: .
+    image: "exporters/power_exporter_ssl"
+    container_name: power_exporter_ssl1
+    hostname: power_exporter1
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9101"]
+      interval: 60s
+      retries: 3
+    environment:
+      KAFKA_TOPIC: 'PowerProd'
+      KAFKA_BOOTSTRAP_SERVERS: '172.17.0.1:29092,172.17.0.1:29093,172.17.0.1:29094'
+      EXPORTER_PORT: 9101
+    volumes:
+      - ./pem/ca-root.pem:/code/pem/ca-root.pem:ro
+      - ./pem/client-certificate.pem:/code/pem/client-certificate.pem:ro
+      - ./pem/client-private-key.pem:/code/pem/client-private-key.pem:ro
+
+  load-balancer:
+    image: nginx:latest
+    container_name: power_exporter_lb
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-I", "http://localhost:9102"]
+      interval: 60s
+      retries: 3
+    volumes:
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - power_exporter_ssl0
+      - power_exporter_ssl1
